@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroAdvisor - Sistema de Recomendações Agrícolas</title>
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #3346f1 0%, #3097ec 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    .header p {
+      color: #7f8c8d;
+      font-size: 1.1em;
+    }
+    .form-section {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      border: 1px solid #e9ecef;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 1.1em;
+    }
+    select, input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      font-size: 1em;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    select:focus, input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    .btn {
+      background: linear-gradient(135deg, #3346f1 0%, #3097ec 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    .result-section {
+      background: #fff;
+      padding: 25px;
+      border-radius: 15px;
+      border: 2px solid #e9ecef;
+      margin-top: 25px;
+      min-height: 150px;
+    }
+    .stage-image {
+      width: 100%;
+      max-width: 600px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      border: 3px solid #fff;
+    }
+    .stage-info {
+      background: linear-gradient(135deg, #3346f1 0%, #3097ec 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .stage-title {
+      font-size: 1.4em;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .result-card {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+    .result-card h3 {
+      margin-bottom: 10px;
+      font-size: 1.3em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .result-card p {
+      line-height: 1.6;
+      font-size: 1em;
+    }
+    .history-section {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 25px;
+      border: 1px solid #e9ecef;
+    }
+    .history-item {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border-left: 4px solid #002fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .history-item button {
+      background: none;
+      border: none;
+      color: red;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    .alert {
+      background: #fff3cd;
+      color: #856404;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #ffeaa7;
+      text-align: center;
+      font-weight: 500;
+    }
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      .header h1 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Smart Agriculture</h1>
+      <p>Sistema Inteligente de Recomendações Agrícolas</p>
+    </div>
+    <div class="form-section">
+      <h2 style="color: #2c3e50; margin-bottom: 20px;">📋 Consulta de Recomendações</h2>
+      <div class="form-group">
+        <label for="cultura">🌱 Selecione a Cultura:</label>
+        <select id="cultura">
+          <option value="">Escolha uma cultura</option>
+          <option value="soja">Soja</option>
+          <option value="milho">Milho</option>
+          <option value="feijão">Feijão</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="estagio">📊 Estágio Fenológico:</label>
+        <select id="estagio">
+          <option value="">Selecione primeiro a cultura</option>
+        </select>
+      </div>
+      <button class="btn" onclick="buscarRecomendacao()"> Buscar Recomendações </button>
+    </div>
+    <div class="result-section" id="resultado">
+      <div class="alert">Selecione uma cultura e estágio fenológico para ver as recomendações</div>
+    </div>
+    <div class="history-section">
+      <h3 style="color: #2c3e50; margin-bottom: 15px;">📚 Histórico de Consultas</h3>
+      <div id="historico"></div>
+    </div>
+  </div>
+
+
+  <script>
+    const recomendacoes = {
+      "soja": {
+        "vE": {
+          pragas: "Tamanduá-da-soja (Spodoptera frugiperda - lagarta)",
+          prevenção: "Tratamento de sementes com inseticida sistêmico (ex: imidacloprido). Monitorar emergência para evitar replantio.",
+          imagem: "soja.jpg",
+          descricao: ""
+        },
+        "vC": {
+          pragas: "Corós e vaquinhas (Diabrotica speciosa)",
+          prevenção: "Uso de armadilhas com atrativos, rotação de culturas e aplicação de inseticidas de solo (ex: fipronil).",
+          imagem: "soja.jpg",
+          descricao: ""
+        },
+        "v1 a v3": {
+          pragas: " Lagarta falsa-medideira (Chrysodeixis includens)",
+          prevenção: "Monitoramento com pano de batida. Controle com biológicos (ex: Bacillus thuringiensis) ou inseticidas seletivos (flubendiamida).",
+          imagem: "soja.jpg",
+          descricao: ""
+        },
+        "r1": {
+          pragas: "Mosca-branca (Bemisia tabaci).",
+          prevenção: "Plantio com espaçamento adequado. Inseticidas seletivos como spiromesifeno ou uso de inimigos naturais.",
+          imagem: "soja.jpg",
+          descricao: ""
+        },
+        "r3": {
+          pragas: "Percevejo-marrom (Euschistus heros).",
+          prevenção: "Monitoramento com pano-de-batida. Aplicação com neonicotinóides ou pire",
+          imagem: "soja.jpg",
+          descricao: ""
+        },
+        "r6": {
+          pragas: "Percevejo-barriga-verde (Dichelops furcatus)",
+          prevenção: "Monitoramento intensivo (pano de batida). Uso de inseticidas de contato como lambda-cialotrina ou acefato.",
+          imagem: "soja.jpg",
+          descricao: ""
+        },
+        "r7": {
+          pragas: "Helicoverpa armigera.",
+          prevenção: " Inimigos naturais (ex: Trichogramma spp.), controle químico só se ultrapassar nível de dano econô",
+          imagem: "soja.jpg",
+          descricao: ""
+        },
+        "r8": {
+          pragas: "Persistência de percevejos.",
+          prevenção: "Evitar aplicações tardias. Foco em colheita rápida e sincronizada para não manter campo atrativo.",
+          imagem: "soja.jpg",
+          descricao: ""
+        },
+      },
+      "milho": {
+        "vE": {
+          pragas: " Larva-alfinete (Diabrotica speciosa). ",
+          prevenção: "Actara (Tiametoxam) – Tratamento de sementes. Boa rotação de culturas e plantio em solo com bom preparoBoa germinação e população uniforme.",
+          imagem: "Milho.jpg",
+          descricao: ""
+        },
+        "v1": {
+          pragas: " Lagarta-do-cartucho (Spodoptera frugiperda)",
+          prevenção: "Premio (Ciantraniliprole) Aplicação: Pulverização preventiva nas primeiras folhas",
+          imagem: "Milho.jpg",
+          descricao: ""
+        },
+        "v3": {
+          pragas: "Lagarta-rosada (Agrotis ipsilon)",
+          prevenção: "Lorsban 480 BR (Clorpirifós) Ação: Contato e ingestão, excelente no solo",
+          imagem: "Milho.jpg",
+          descricao: ""
+        },
+        "v7": {
+          pragas: "Pulgão-do-milho (Rhopalosiphum maidis).",
+          prevenção: "Engeo Pleno S (Lambda-cialotrina + Tiametoxam). Prevenção: Monitoramento constante e controle químico ao identificar colônias.",
+          imagem: "Milho.jpg",
+          descricao: ""
+        },
+        "v10": {
+          pragas: "Cigarrinha-do-milho (Dalbulus maidis).",
+          prevenção: "Actellic 500 CE (Pirimifós-metílico). Prevenção: Eliminar milho tiguera e sincronizar semeadura.",
+          imagem: "Milho.jpg",
+          descricao: ""
+        },
+        "vT": {
+          pragas: "Lagarta-da-espiga (Helicoverpa zea).",
+          prevenção: "Belt (Flubendiamida). Aplicação: Pulverização direcionada às espigas jovens",
+          imagem: "Milho.jpg",
+          descricao: ""
+        },
+        "r1": {
+          pragas: "Percevejo-barriga-verde (Dichelops furcatus).",
+          prevenção: "Galil (Acetamiprido + Bifentrina). Controle rápido de percevejos por contato e sistêmico.",
+          imagem: "Milho.jpg",
+          descricao: ""
+        },
+        "r2 a r5": {
+          pragas: "Lagarta-da-espiga persiste.",
+          prevenção: "Intrepid (Metoxifenozida). Seletivo, baixa toxidade para inimigos naturais.",
+          imagem: "Milho.jpg",
+          descricao: ""
+        },
+        "r6": {
+          pragas: "Persistência de percevejos e ataques tardios de lagartas.",
+          prevenção: "Acefato Nortox 750 BR (Acefato). Limpeza final antes da colheita, contato e ingestão.",
+          imagem: "Milho.jpg",
+          descricao: ""
+        },
+      },
+     "feijão":  {
+        "v0": {
+          pragas: " Corós (larvas de besouros do solo).",
+          prevenção: "Fipronil 250 SC, tratamento de sementes, prevenção com rotação de culturas e bom preparo do solo",
+          imagem: "Feijão.jpg",
+          descricao: ""
+        },
+        "v1": {
+          pragas: "Tamanduá-da-soja (Spodoptera frugiperda) também pode atacar feijão",
+          prevenção: "Premio (Ciantraniliprole), ação sobre lagartas no solo e primeiras folhas.",
+          imagem: "Feijão.jpg",
+          descricao: ""
+        },
+        "v2": {
+          pragas: "Vaquinha (Diabrotica speciosa).",
+          prevenção: "Actara (Tiametoxam). Aplicação via pulverização foliar",
+          imagem: "Feijão.jpg",
+          descricao: ""
+        },
+        "v3": {
+          pragas: " Mosca-branca (Bemisia tabaci).",
+          prevenção: "Oberon (Spiromesifeno). Alta eficácia sobre formas jovens da mosca.",
+          imagem: "Feijão.jpg",
+          descricao: ""
+        },
+        "v4": {
+          pragas: "Lagarta falsa-medideira (Chrysodeixis includens).",
+          prevenção: "Intrepid (Metoxifenozida). Seletivo e de ação prolong.",
+          imagem: "Feijão.jpg",
+          descricao: ""
+        },
+        "r5": {
+          pragas: "Pulgão-preto-do-feijoeiro (Aphis craccivora)",
+          prevenção: "Engeo Pleno S (Lambda-cialotrina + Tiametoxam). Controle sistêmico e por contato.",
+          imagem: "Feijão.jpg",
+          descricao: ""
+        },
+        "r6": {
+          pragas: "Tripes (Caliothrips phaseoli).",
+          prevenção: "Success (Spinosade). Alta eficácia, menos impacto em inimigos natura.",
+          imagem: "Feijão.jpg",
+          descricao: ""
+        },
+        "r7": {
+          pragas: "Percevejo-marrom (Euschistus heros).",
+          prevenção: "Galil (Acetamiprido + Bifentrina). Controle de percevejos de forma rápida.",
+          imagem: "Feijão.jpg",
+          descricao: ""
+        },
+        "r8": {
+          pragas: "Helicoverpa armigera (ataques tardios em vagens).",
+          prevenção: "Benevia (Ciantraniliprole). Ação rápida e segura sobre lagartas.",
+          imagem: "Feijão.jpg",
+          descricao: ""
+        },
+        "r9": {
+          pragas: "Percevejos remanescentes e mosca-branca.",
+          prevenção: "Acefato Nortox 750 BR (Acefato). Aplicação final antes da colheita (verificar intervalo de segurança).",
+          imagem: "Feijão.jpg",
+          descricao: ""
+        }
+      }
+    };
+
+
+    const culturaSelect = document.getElementById('cultura');
+    const estagioSelect = document.getElementById('estagio');
+    const resultadoDiv = document.getElementById('resultado');
+    const historicoDiv = document.getElementById('historico');
+
+
+    culturaSelect.addEventListener('change', () => {
+      const cultura = culturaSelect.value;
+      estagioSelect.innerHTML = '<option value="">Selecione o estágio...</option>';
+      if (recomendacoes[cultura]) {
+        for (const estagio in recomendacoes[cultura]) {
+          const option = document.createElement('option');
+          option.value = estagio;
+          option.textContent = estagio.toUpperCase();
+          estagioSelect.appendChild(option);
+        }
+      }
+    });
+
+
+    function buscarRecomendacao() {
+      const cultura = culturaSelect.value;
+      const estagio = estagioSelect.value;
+
+
+      if (!cultura || !estagio) {
+        resultadoDiv.innerHTML = `<div class="alert">⚠️ Por favor, selecione uma cultura e um estágio válido.</div>`;
+        return;
+      }
+
+
+      const dados = recomendacoes[cultura][estagio];
+      resultadoDiv.innerHTML = `
+        <div class="stage-info">
+          <div class="stage-title">${estagio.toUpperCase()}  ${dados.descricao}</div>
+          <img class="stage-image" src="${dados.imagem}" alt="${estagio}">
+        </div>
+        <div class="result-card">
+          <h3>🐛 Pragas</h3>
+          <p>${dados.pragas}</p>
+        </div>
+        <div class="result-card">
+          <h3>🧑‍🌾 prevenção</h3>
+          <p>${dados.prevenção}</p>
+        </div>
+      `;
+
+
+      const historicoItem = { cultura, estagio, descricao: dados.descricao };
+      let historico = JSON.parse(localStorage.getItem('agroHistorico')) || [];
+      historico.unshift(historicoItem);
+      localStorage.setItem('agroHistorico', JSON.stringify(historico));
+      atualizarHistorico();
+    }
+
+
+    function atualizarHistorico() {
+      historicoDiv.innerHTML = '';
+      const historico = JSON.parse(localStorage.getItem('agroHistorico')) || [];
+      historico.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.classList.add('history-item');
+        div.innerHTML = `
+          <span><strong>${item.cultura.toUpperCase()} - ${item.estagio.toUpperCase()}</strong> ${item.descricao}</span>
+          <button onclick="removerHistorico(${index})">🗑</button>
+        `;
+        historicoDiv.appendChild(div);
+      });
+    }
+
+
+    function removerHistorico(index) {
+      let historico = JSON.parse(localStorage.getItem('agroHistorico')) || [];
+      historico.splice(index, 1);
+      localStorage.setItem('agroHistorico', JSON.stringify(historico));
+      atualizarHistorico();
+    }
+
+
+    window.onload = atualizarHistorico;
+  </script>
+</body>
+</html>
+
+
+
